@@ -1,0 +1,113 @@
+---
+title: "Testdoc_pivot_2024"
+author: "Dr. Pivot"
+format: 
+  docx:
+    reference-doc: template1.docx
+    toc: true
+    toc-depth: 3
+execute: 
+  echo: true
+  warning: false
+  output: asis
+fig.dpi: 300
+fig-width: 6
+fig-height: 4
+editor: visual
+---
+
+## How to use pivot function
+
+#### STEP 1: load packages and read the data file. The data file (widedata.xlsx) has the variable name "rawdata"
+
+```{r}
+pacman::p_load(conflicted, tidyverse, readxl, wrappedtools, here, flextable)
+rawdata <- read_excel(here("~/Desktop/2024_Bioinfo_Biostats/CQ/Bioinfo_Biostat_Weiterbildung/Kurs/Module4_Applied_Biostatistics/RStatsbook2/widedata.xlsx"))
+```
+
+#### Visualizing the content of rawdata
+
+```{r}
+rawdata
+```
+
+\newpage
+
+#### Visualizing the rawdata using flextable()
+
+```{r}
+rawdata |>
+  flextable()|>
+  theme_zebra() |>
+  set_table_properties(width =1,
+                       layout = "autofit")
+```
+
+#### STEP 2: Modify table rawdata to longer using pivot_longer
+
+##### Once the rawdata is in Global environment, start using pivot_longer to modify the table. This modification doesn't modify the original rawdata. Remember: to export the table with a comprehensive aesthetics, please use flextable() function.
+
+```{r}
+rd_long1 <- pivot_longer(rawdata,
+                         starts_with("We"))
+rd_long1 |>
+  flextable()|>
+  theme_zebra() |>
+  set_table_properties(width =1,
+                       layout = "autofit")
+  
+```
+
+\newpage
+
+#### STEP 3: Improve a bit more the pivot_longer
+
+```{r}
+rd_long2 <- pivot_longer(rawdata,
+                         starts_with("We"),
+                         values_to="Weight [g]")
+rd_long2|>
+  flextable()|>
+  theme_zebra() |>
+  set_table_properties(width =1,
+                       layout = "autofit")
+```
+
+\newpage
+
+#### STEP 4: Improve a bit more the pivot_longer
+
+```{r}
+rd_long3 <- pivot_longer(rawdata,
+                         starts_with("We"), # here 'cols' was omitted but by following the order of factors, we can omit it
+                         values_to="Weight [g]",
+                         names_to="Time [h]",
+                         names_pattern = ".+ (\\d+).+") #regular expression meaning: search for one or more than one character, followed by a space and then for one or more numbers, and after the number there's something else
+rd_long3|>
+  flextable()|>
+  theme_zebra() |>
+  set_table_properties(width =1,
+                       layout = "autofit")
+```
+
+#### STEP 5: from longer to wider
+
+```{r}
+rd_long <-
+  pivot_longer(rawdata,
+               cols = starts_with("We"),
+               names_to=c(".value","Time [h]"),
+               names_pattern = "(W.+\\]) (\\d+).+") # dot(.) is a wild card and it can be anything. Plus (+) means that there's one or more characters after "W"
+
+rd_wide <-
+  pivot_wider(rd_long,
+              names_from = `Time [h]`,
+              values_from = `Weight [g]`,
+              names_glue = "Weight [g] @{`Time [h]`}h") # in {} we are referring the name of the columns generated from "Time [h]"
+rd_wide|>
+  flextable()|>
+  theme_zebra() |>
+  set_table_properties(width =1,
+                       layout = "autofit")
+
+```
