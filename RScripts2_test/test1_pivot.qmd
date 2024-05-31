@@ -111,3 +111,27 @@ rd_wide|>
                        layout = "autofit")
 
 ```
+
+#### STEP 6: 
+
+#### Changing the appearance 1
+
+```{r}
+rd_wide|>
+  flextable()|>
+  theme_zebra(odd_header = "#ccd5ae") |>
+  set_table_properties(width =1,
+                       layout = "autofit")
+```
+
+#### STEP 6:
+
+#### Changing the appearance 2
+
+```{r}
+rd_wide|>
+  flextable()|>
+  theme_tron_legacy() |>
+  set_table_properties(width =1,
+                       layout = "autofit")
+```
